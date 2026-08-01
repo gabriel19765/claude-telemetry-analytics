@@ -6,6 +6,8 @@ This is an analytics platform that processes Claude Code telemetry logs (CloudWa
 ## Architecture
 - **Ingestion**: `src/ingestion.py` — parses JSONL → DuckDB star schema
 - **Analytics**: `src/analytics.py` — SQL query layer over DuckDB
+- **ML Anomaly Detection**: `src/ml.py` — Z-Score and IQR statistical anomaly detection
+- **API REST Service**: `src/api.py` — FastAPI programmatic endpoints
 - **Dashboard**: `src/app.py` — Streamlit multi-persona UI
 - **Database**: `data/telemetry.duckdb` (generated at runtime)
 
