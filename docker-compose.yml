@@ -4,7 +4,7 @@ services:
     ports:
       - "8501:8501"
     volumes:
-      - ./output:/app/output:ro
+      - ./output:/app/output
       - telemetry-data:/app/data
     environment:
       - PYTHONUNBUFFERED=1

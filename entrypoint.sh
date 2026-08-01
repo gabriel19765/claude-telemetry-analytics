@@ -5,6 +5,13 @@ echo "============================================"
 echo "  Claude Code Telemetry Analytics Platform"
 echo "============================================"
 
+# Step 0: Generate dataset if missing
+if [ ! -f "output/telemetry_logs.jsonl" ]; then
+    echo ""
+    echo "[ENTRYPOINT] Dataset output/telemetry_logs.jsonl not found. Generating synthetic dataset..."
+    python generate_fake_data.py --num-users 100 --num-sessions 5000 --days 60
+fi
+
 # Step 1: Run ingestion pipeline (idempotent)
 echo ""
 echo "[ENTRYPOINT] Running ingestion pipeline..."
@@ -18,3 +25,4 @@ exec streamlit run src/app.py \
     --server.address=0.0.0.0 \
     --server.headless=true \
     --browser.gatherUsageStats=false
+
