@@ -2,8 +2,8 @@
 
 A production-grade, containerized analytics platform that ingests Claude Code telemetry logs (CloudWatch/OTel format), transforms them into a DuckDB OLAP Star Schema, and serves multi-persona dashboards (Streamlit), programmatic endpoints (FastAPI), and ML anomaly detection.
 
-![Docker Image Size](https://img.shields.io/badge/Docker--Image--Size-342MB-brightgreen?style=flat-square&logo=docker)
-![Ingestion Speed](https://img.shields.io/badge/ETL--Ingestion-454K_events_in_8.2s-blue?style=flat-square)
+![Docker Image Size](https://img.shields.io/badge/Docker--Image--Size-~350MB-brightgreen?style=flat-square&logo=docker)
+![Ingestion Speed](https://img.shields.io/badge/ETL--Ingestion-~450K_events_in_~8s-blue?style=flat-square)
 ![Tests](https://img.shields.io/badge/Tests-32%2F32_PASSED-success?style=flat-square&logo=pytest)
 ![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub_Actions_Passed-success?style=flat-square&logo=githubactions)
 
@@ -14,11 +14,11 @@ A production-grade, containerized analytics platform that ingests Claude Code te
 | Metric | Measured Value | Developer Rationale |
 |---|---|---|
 | **Docker Base Image** | `python:3.11-slim` | Minimalist Debian slim layer for lightweight footprint. |
-| **Installed Container Size** | **342 MB** | **Ultra-lightweight**: Downloads in ~15-30s on normal broadband. |
+| **Installed Container Size** | **~350 MB** | **Ultra-lightweight**: Fast download (~15-30s) on standard broadband. |
 | **Container Build Time** | **~45 seconds** | Fast build cycle without unnecessary heavy compilers. |
-| **ETL Pipeline Ingestion Speed** | **8.2 seconds** | Parses & ingests 454,428 JSON events in vectorized DuckDB. |
+| **ETL Pipeline Ingestion Speed** | **~8 seconds** | Vectorized DuckDB parsing & unnesting of ~450K JSON events. |
 | **Dashboard Startup Time** | **< 2 seconds** | Instant Streamlit & Uvicorn startup on port 8501. |
-| **Query Latency** | **< 15 ms** | In-memory columnar DuckDB SQL aggregations. |
+| **Query Latency** | **< 15 ms** | In-memory columnar DuckDB SQL analytical aggregations. |
 
 ---
 
