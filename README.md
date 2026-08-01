@@ -277,11 +277,19 @@ Beyond the required assignment scope, the following production-grade capabilitie
 │   ├── test_analytics.py             # Analytics tests
 │   ├── test_ml.py                    # ML anomaly tests
 │   └── test_api.py                   # API endpoint tests
-├── AGENTS.md                         # Agent entry point
-├── PRESENTATION.md                   # Findings presentation
-├── Makefile                          # Developer command shortcuts
-├── Dockerfile
-├── docker-compose.yml
-└── requirements.txt
 ```
+
+---
+
+## 🚀 Production Roadmap & Future Scale Architecture
+
+To scale this analytics platform to enterprise production volume (>10M events/day), the following architecture milestones are planned:
+
+- [ ] **Feat: Real-Time Streaming Ingestion via Apache Kafka / AWS Kinesis**
+  - Replace batch JSONL file polling with a Kafka Consumer micro-batch service streaming CloudWatch OTel events directly into DuckDB in near real-time (< 1s latency).
+- [ ] **Feat: Incremental Ingestion with CDC & DuckDB MERGE**
+  - Implement timestamp-based watermarking and CDC (Change Data Capture) using `MERGE / UPSERT` SQL primitives to process delta updates without full table rebuilds.
+- [ ] **Feat: Enterprise SSO & Multi-Tenant Role-Based Access Control (RBAC)**
+  - Integrate OAuth2 / Okta authentication to restrict data visibility so Practice Leads view practice-specific metrics while CTOs maintain full organization access.
+
 
