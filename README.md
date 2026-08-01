@@ -141,9 +141,40 @@ pytest tests/test_ingestion.py::TestTryCastBehavior -v
 
 Tests use self-contained in-memory DuckDB fixtures — no dependency on the full dataset.
 
+## Deliverables & Scope Checklist
+
+### Core Requirements Completed (100%)
+
+- [x] **Data Ingestion & Pipeline (`src/ingestion.py`)**: Unnested CloudWatch `logEvents[].message` JSON batches, safely converted numerical fields using `TRY_CAST`, joined employee metadata via `user_email`, and populated a high-performance DuckDB Star Schema (`dim_employees` + 4 fact tables).
+- [x] **Multi-Persona Interactive Dashboard (`src/app.py`)**:
+  - **CTO / Executive View**: Total costs, token volume, cache hit ratio %, and cost distribution by engineering practice & seniority level.
+  - **Product Manager View**: Model adoption breakdown (Haiku, Sonnet, Opus), tool execution frequency, user rejection rates (`decision == 'reject'`), and latency distributions.
+  - **Developer Insights View**: API HTTP error analysis (429 rate limits, 400, 500), prompt interaction turns, and high-latency tools (P50/P95/P99 percentiles).
+- [x] **Tuned Agentic Setup & Artifacts**:
+  - **Custom Agent Skill (`agent/skills/telemetry_analyzer.py`)**: Executable CLI tool allowing LLM agents to inspect DuckDB schemas and run analytical SQL returning clean JSON.
+  - **Domain Rules (`agent/rules/telemetry_rules.md`) & Root Spec (`AGENTS.md`)**: Enforces vectorized DuckDB execution, `TRY_CAST` data hygiene, and structured logging.
+  - **Environment Specification**: `.env.example` committed with reproduction instructions.
+- [x] **Single-Command Docker Execution (`docker-compose.yml`)**: Fully containerized environment launching dataset generation (if missing), ETL ingestion, and Streamlit startup on port 8501.
+
+---
+
+## Value-Add Enhancements & Engineering Decisions
+
+Beyond the required assignment scope, the following production-grade capabilities were implemented to deliver a complete platform:
+
+| Enhancement | Location | Architectural & Business Rationale |
+|---|---|---|
+| **Programmatic REST API** | `src/api.py` | Exposes FastAPI endpoints (`/api/v1/metrics/*`, `/api/v1/anomalies/*`, `/health`, `/docs`) allowing third-party tools (Datadog, Grafana, internal CLI scripts) to consume analytics programmatically without a browser UI. |
+| **ML Anomaly Detection** | `src/ml.py` | Uses Z-score thresholding (>3.0 std dev) for cost spikes and Interquartile Range (IQR) for tool latency outliers. Enables proactive alerting before budget overruns occur. |
+| **Automated CI/CD Workflow** | `.github/workflows/ci.yml` | GitHub Actions pipeline running the 32-test Pytest suite on every push to ensure code quality and prevent contract regressions. |
+| **Self-Healing Docker Ingestion** | `entrypoint.sh` | Automatically detects missing telemetry logs on fresh clone environments, generates synthetic dataset, runs the ETL pipeline, and launches the server seamlessly. |
+| **Developer Tooling** | `Makefile` | Standardized interface for developers and evaluators (`make test`, `make build`, `make api`, `make dashboard`, `make skill`). |
+
+
 ## Project Structure
 
 ```
+├── .github/workflows/ci.yml          # GitHub Actions CI pipeline
 ├── agent/
 │   ├── rules/telemetry_rules.md      # Architecture & coding constraints
 │   └── skills/telemetry_analyzer.py  # Custom DB query skill
@@ -154,27 +185,19 @@ Tests use self-contained in-memory DuckDB fixtures — no dependency on the full
 ├── src/
 │   ├── ingestion.py                  # ETL pipeline
 │   ├── analytics.py                  # SQL query layer
-│   └── app.py                        # Streamlit dashboard
+│   ├── ml.py                         # ML anomaly detection
+│   ├── api.py                        # FastAPI REST service
+│   └── app.py                        # Streamlit multi-persona dashboard
 ├── tests/
 │   ├── test_ingestion.py             # Pipeline tests
-│   └── test_analytics.py             # Analytics tests
+│   ├── test_analytics.py             # Analytics tests
+│   ├── test_ml.py                    # ML anomaly tests
+│   └── test_api.py                   # API endpoint tests
 ├── AGENTS.md                         # Agent entry point
 ├── PRESENTATION.md                   # Findings presentation
+├── Makefile                          # Developer command shortcuts
 ├── Dockerfile
 ├── docker-compose.yml
 └── requirements.txt
 ```
 
-## Trade-offs & Future Enhancements
-
-### Current Trade-offs
-- **In-memory Python parsing**: The JSONL is parsed in Python (not pure DuckDB `read_json_auto`) because the nested `logEvents[].message` contains stringified JSON that requires double-parsing. For a 500MB file this takes ~30s — acceptable for batch but not for streaming.
-- **No incremental loads**: Each run rebuilds all tables. Sufficient for the dataset size but would need CDC/watermarking for production.
-- **Single-process**: Dashboard and DB share a process. A production system would separate ingestion workers from the serving tier.
-
-### Future Enhancements
-- **Incremental ingestion** with DuckDB MERGE/UPSERT for append-only updates
-- **Anomaly detection** on cost spikes or error rate changes using statistical models
-- **Real-time streaming** via Kafka/Kinesis → DuckDB with micro-batch inserts
-- **API layer** (FastAPI) for programmatic metric access
-- **Time-series views** with date partitioning for trend analysis

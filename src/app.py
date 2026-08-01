@@ -6,11 +6,19 @@ Three views:
 3. Developer Insights — Performance & Operational Health
 """
 
+import sys
+from pathlib import Path
+
+# Ensure project root is in sys.path
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 
-from src import analytics
+from src import analytics, ml
 
 # ---------------------------------------------------------------------------
 # Page config
@@ -443,3 +451,29 @@ elif persona == "🔧 Developer Insights":
         )
         st.plotly_chart(fig, use_container_width=True)
         st.dataframe(df_api_lat, use_container_width=True, hide_index=True)
+
+    st.markdown("---")
+
+    # --- ML Anomaly Detection ---
+    st.subheader("🤖 ML Statistical Anomaly Detection")
+    st.caption("Outlier identification using Z-score thresholding (>3.0 std dev) & IQR metrics")
+
+    col_anom1, col_anom2 = st.columns(2)
+    with col_anom1:
+        st.markdown("##### High Cost Outliers (Z-Score > 3.0)")
+        df_cost_anom = ml.detect_cost_anomalies(con, z_threshold=3.0)
+        if not df_cost_anom.empty:
+            st.warning(f"Detected {len(df_cost_anom)} cost anomalies.")
+            st.dataframe(df_cost_anom, use_container_width=True, hide_index=True)
+        else:
+            st.success("No extreme cost anomalies detected.")
+
+    with col_anom2:
+        st.markdown("##### Latency Outliers (IQR Method)")
+        df_lat_anom = ml.detect_latency_anomalies(con, iqr_multiplier=1.5)
+        if not df_lat_anom.empty:
+            st.warning(f"Detected {len(df_lat_anom)} tool latency outliers.")
+            st.dataframe(df_lat_anom, use_container_width=True, hide_index=True)
+        else:
+            st.success("No latency outliers detected.")
+

@@ -9,10 +9,21 @@ Usage:
 
 import argparse
 import json
+import os
 import sys
+import warnings
 from pathlib import Path
 
-import duckdb
+# Silence C-extension stderr noise during imports
+_old_stderr = sys.stderr
+sys.stderr = open(os.devnull, "w")
+try:
+    warnings.filterwarnings("ignore")
+    os.environ["PYTHONWARNINGS"] = "ignore"
+    import duckdb
+    import pandas
+finally:
+    sys.stderr = _old_stderr
 
 DB_PATH = Path(__file__).resolve().parent.parent.parent / "data" / "telemetry.duckdb"
 

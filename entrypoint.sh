@@ -4,6 +4,7 @@ set -e
 echo "============================================"
 echo "  Claude Code Telemetry Analytics Platform"
 echo "============================================"
+export PYTHONPATH="${PYTHONPATH}:/app:."
 
 # Step 0: Generate dataset if missing
 if [ ! -f "output/telemetry_logs.jsonl" ]; then
