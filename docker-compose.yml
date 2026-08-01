@@ -1,5 +1,6 @@
 services:
   telemetry-dashboard:
+    container_name: claude-telemetry-dashboard
     build: .
     ports:
       - "8501:8501"
