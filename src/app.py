@@ -57,6 +57,49 @@ MODEL_COLORS = {
     "claude-opus-4-6": "#F97316",
 }
 
+# Set default Plotly dark template
+px.defaults.template = "plotly_dark"
+
+# Inject Custom CSS for visual excellence
+st.markdown("""
+<style>
+    /* Metric Card Styling */
+    div[data-testid="stMetric"] {
+        background: linear-gradient(135deg, #181825 0%, #1e1e2e 100%) !important;
+        border: 1px solid #313244 !important;
+        padding: 16px !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+        transition: transform 0.2s ease-in-out;
+    }
+    div[data-testid="stMetric"]:hover {
+        transform: translateY(-2px);
+        border-color: #6366F1 !important;
+    }
+    div[data-testid="stMetricValue"] > div {
+        font-size: 1.85rem !important;
+        font-weight: 700 !important;
+        color: #818CF8 !important;
+    }
+    div[data-testid="stMetricLabel"] > label {
+        font-size: 0.9rem !important;
+        color: #A6ADC8 !important;
+        font-weight: 600 !important;
+    }
+    /* Section dividers */
+    hr {
+        border-color: #313244 !important;
+        margin: 2rem 0 !important;
+    }
+    /* Dataframe tables */
+    .stDataFrame {
+        border: 1px solid #313244 !important;
+        border-radius: 8px !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+
 
 def format_usd(val: float) -> str:
     return f"${val:,.2f}"

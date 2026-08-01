@@ -146,22 +146,28 @@ All numeric fields in the telemetry JSON arrive as **strings**. Using `CAST` wou
 | `fact_api_errors` | API error events | model, error_message, status_code |
 | `fact_user_prompts` | User prompt events | prompt_length |
 
-## Dashboard Personas
+## 🎨 Dashboard Persona Views & Visual Highlights
 
-### 1. Engineering Lead / CTO
-- Total cost, tokens, cache ratio, error rate KPIs
-- Cost breakdown by engineering practice and seniority level
-- Token efficiency and cache utilization comparison
+The Streamlit dashboard (`src/app.py`) features a **custom dark glassmorphic UI (`#1E1E2E`)** with interactive Plotly visual charts across three personas:
 
-### 2. Product Manager
-- Model adoption breakdown (Haiku/Sonnet/Opus) with pie + bar charts
-- Tool usage frequency and rejection rates
-- Tool execution success rates and latency distributions
+### 1. 🏗️ Engineering Lead / CTO (Cost & Efficiency Governance)
+- **Executive Metric Cards**: Total cost ($USD), token volume, cache hit ratio %, and API error rate.
+- **Cost Distribution Charts**: Cost breakdown by Engineering Practice (ML, Data, Backend, Frontend) and Seniority Level (Junior to Principal).
+- **Prompt vs Cache Optimization**: Token efficiency analysis showing cache creation vs cache read savings.
 
-### 3. Developer Insights
-- API errors by status code (429, 400, 500) and by model
-- Session interaction analysis (prompts per session, prompt length distribution)
-- High-latency tool identification with P50/P95/P99 percentiles
+### 2. 📦 Product Manager (Model Adoption & Tool Analytics)
+- **Model Market Share**: Interactive donut & bar charts showing model adoption (`claude-haiku-4-5`, `claude-sonnet-4-6`, `claude-opus-4-6`).
+- **Tool Decision Matrix**: Tracking auto-approved vs user-rejected decisions (`decision == 'reject'`) by engineering practice.
+- **Tool Execution Reliability**: Success rates and latency distributions across core tools (Read, Write, Edit, Bash).
+
+### 3. 🔧 Developer Insights & ML Anomaly Detection
+- **Operational Health**: HTTP status code error breakdown (429 Rate Limits, 500 Server Errors, 400 Bad Requests).
+- **Tool Performance Percentiles**: P50, P95, and P99 latency percentiles to catch performance bottlenecks.
+- **🤖 ML Statistical Anomaly Detection**:
+  - **Scatter Plot (Cost vs Z-Score)**: Visualizing extreme cost anomalies exceeding **+3.0 Std Devs**.
+  - **Bar Chart (Tool Latency Outliers)**: Identifying severe execution delays exceeding **Q3 + 1.5 × IQR**.
+
+
 
 ## Agent Setup & Tuning
 
