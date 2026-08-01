@@ -1,0 +1,78 @@
+# Internship Test Assignment: Claude Code Usage Analytics Platform
+
+## Overview
+
+Build an analytics platform that processes Claude Code telemetry data to extract insights about code development patterns and user behavior through interactive dashboards.
+
+## Dataset
+
+You will receive a data file containing:
+
+- Anonymized telemetry data from Claude Code usage sessions
+- Events covering token usage, code generation requests, and development sessions
+- Metadata enrichment, including user roles
+
+## Requirements
+
+Your solution should demonstrate:
+
+### Data Processing
+- Ingest, process, and clean the provided event data
+- Design appropriate data storage/retrieval mechanisms
+
+### Analytics & Insights
+- Extract meaningful patterns from Claude Code usage data
+- Identify key metrics and trends in code generation behavior
+- Present findings that could inform product decisions
+
+### Dashboard/Visualization
+- Create interactive dashboards to display Claude Code usage insights
+- Ensure visualizations are clear and actionable
+- Consider different user personas who might consume this data
+
+### Agent Setup & Tuning
+- Tune the LLM/agentic tool you use for this specific task and solve the assignment with that tuned build. Generating the entire solution with your agent is expected and will be viewed favorably: pipelines, dashboards, schemas, tests, and documentation can all be agent-produced
+- Any agentic tool qualifies. Paid tools are not required: free options include OpenAI Codex CLI (included in the ChatGPT Free plan for local tasks), Gemini CLI, etc. Claude Code, Cursor, and Copilot work too if you have access (Cursor offers 1 year of Pro free for students)
+- The setup may include custom skills, instruction/rules files (CLAUDE.md, AGENTS.md, GEMINI.md, .cursorrules, etc.), MCP servers, subagents, hooks, slash commands, or any other configuration your tool supports
+- At minimum, include a custom skill or equivalent component that lets the agent interact with the dataset and/or analyze it (data structure knowledge, query patterns, analytical outputs)
+- Plain chat usage (copy-pasting into a web chat) does not satisfy this requirement; the setup must be a committed, reproducible configuration of an agentic tool
+- The complete setup is part of the task and must be committed to the repository as a deliverable: all configuration files, skill definitions, MCP configs, and supporting scripts, plus instructions to reproduce the setup. Never commit API keys or credentials; use environment variables and provide an .env.example
+
+### Technical Implementation
+- Build an end-to-end solution from data ingestion to presentation
+- The solution must start with a single documented command (e.g., docker compose up or an equivalent script)
+- Document your approach and architectural decisions
+- Include basic error handling and data validation
+
+## Ownership & Understanding
+
+Generating your solution with AI tools is encouraged, but you own every line of it. Regardless of how the code was produced, you are expected to fully understand your solution and be ready to explain it: the architecture and why you chose it, the blockers and problems you hit during development, how you solved them, and what you would do differently. Inability to explain your own submission will weigh heavily against it.
+
+## Optional Enhancements
+
+- Machine learning components for predictive analytics or anomaly detection
+- Real-time streaming capabilities
+- Advanced statistical analysis of Claude Code usage patterns
+- API endpoints for programmatic access
+
+## Evaluation Criteria
+
+- **Functional thinking**: Ability to work from requirements and apply common sense
+- **Technical execution**: Code quality, architecture, and completeness
+- **AI-assisted development**: Quality and thoughtfulness of the tuned agent setup (skills, MCPs, rules, etc.); how much the setup actually improved the agent's ability to produce a complete, working solution
+- **Understanding**: Depth of ownership over the submitted solution; ability to explain architecture, decisions, and problems solved
+- **Creativity**: Freedom to showcase unique skills and interests
+- **Communication**: Clear documentation and presentation of solution approach
+
+## Submission
+
+- Complete solution in a Git repository
+- Complete agent setup committed to the repository: skills, MCP configs, rules/instruction files, and anything else used, with reproduction instructions
+- README with setup instructions and architectural overview
+- Brief presentation explaining approach and findings
+- Documentation of LLM usage and generated components
+
+## Philosophy
+
+This assignment assesses candidates who are curious, adaptable, and can build practical solutions while effectively leveraging AI-assisted development tools. Demonstrate a problem-solving approach and technical skills, with particular emphasis on utilizing LLM capabilities to create comprehensive, working solutions.
+
