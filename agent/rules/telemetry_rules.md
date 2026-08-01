@@ -95,9 +95,14 @@ CREATE OR REPLACE TABLE fact_user_prompts (
 6. **Vectorized Operations**: Prefer DuckDB SQL over Python loops for data transformation. Use `read_json_auto`, `json_extract_string`, and `unnest` where possible.
 7. **Structured Logging**: Use `[INGEST]`, `[ANALYTICS]`, `[VALIDATE]` prefixes in log output.
 
-## Dashboard Rules
+## Dashboard & Serving Rules
 - Use Plotly for all charts (no matplotlib)
 - Streamlit sidebar for persona selection
 - All monetary values formatted as USD with 2 decimal places
 - All percentages with 1 decimal place
 - Color palette: consistent across all personas
+
+## ML & API Serving Rules
+- **ML Anomaly Detection (`src/ml.py`)**: Use Z-score thresholding (>3.0 std dev) for cost spikes and IQR ($Q3 + 1.5 \times IQR$) for tool latency outliers.
+- **REST API Service (`src/api.py`)**: Expose Pydantic-validated FastAPI endpoints under `/api/v1/` for programmatic metric access with automatic `/docs` OpenAPI schema.
+
