@@ -23,12 +23,14 @@ def detect_cost_anomalies(con: duckdb.DuckDBPyConnection, z_threshold: float = 3
         )
         SELECT
             f.epoch_ms,
-            f.session_id,
+            strftime(to_timestamp(f.epoch_ms / 1000), '%Y-%m-%d %H:%M:%S') AS timestamp,
             f.user_email,
             f.model,
-            f.cost_usd,
+            ROUND(f.cost_usd, 4) AS cost_usd,
             f.duration_ms,
-            ROUND((f.cost_usd - s.mean_cost) / NULLIF(s.std_cost, 0), 2) AS z_score
+            ROUND(f.duration_ms / 1000.0, 2) AS duration_sec,
+            ROUND((f.cost_usd - s.mean_cost) / NULLIF(s.std_cost, 0), 2) AS z_score,
+            f.session_id
         FROM fact_api_requests f, stats s
         WHERE f.cost_usd > 0
           AND (f.cost_usd - s.mean_cost) / NULLIF(s.std_cost, 0) >= {z_threshold}
@@ -50,11 +52,13 @@ def detect_latency_anomalies(con: duckdb.DuckDBPyConnection, iqr_multiplier: flo
         )
         SELECT
             f.epoch_ms,
-            f.session_id,
+            strftime(to_timestamp(f.epoch_ms / 1000), '%Y-%m-%d %H:%M:%S') AS timestamp,
             f.user_email,
             f.tool_name,
             f.duration_ms,
-            ROUND(b.q3 + ({iqr_multiplier} * (b.q3 - b.q1)), 0) AS upper_bound_ms
+            ROUND(f.duration_ms / 1000.0, 2) AS duration_sec,
+            ROUND((b.q3 + ({iqr_multiplier} * (b.q3 - b.q1))) / 1000.0, 2) AS threshold_sec,
+            f.session_id
         FROM fact_tool_usage f
         JOIN bounds b ON f.tool_name = b.tool_name
         WHERE f.duration_ms > (b.q3 + ({iqr_multiplier} * (b.q3 - b.q1)))
@@ -71,4 +75,5 @@ def get_anomaly_summary(con: duckdb.DuckDBPyConnection) -> dict:
         "cost_anomaly_count": len(cost_anomalies),
         "total_anomalous_cost_usd": round(cost_anomalies["cost_usd"].sum() if not cost_anomalies.empty else 0.0, 2),
         "latency_anomaly_count": len(latency_anomalies),
+        "max_latency_sec": round(latency_anomalies["duration_sec"].max() if not latency_anomalies.empty else 0.0, 1),
     }

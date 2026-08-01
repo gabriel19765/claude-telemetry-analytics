@@ -456,24 +456,75 @@ elif persona == "🔧 Developer Insights":
 
     # --- ML Anomaly Detection ---
     st.subheader("🤖 ML Statistical Anomaly Detection")
-    st.caption("Outlier identification using Z-score thresholding (>3.0 std dev) & IQR metrics")
+    st.caption("Automated detection of abnormal usage spikes, runaway costs, and severe tool latency degradation.")
 
+    with st.expander("ℹ️ How Anomaly Detection Works (Click to Expand)", expanded=False):
+        st.markdown("""
+        - **Cost Anomalies (Z-Score Thresholding)**: Calculates the standard deviation of API request costs. Any request exceeding **+3.0 Standard Deviations** above the mean cost is flagged as a statistical outlier.
+        - **Tool Latency Anomalies (IQR Method)**: Computes the 75th percentile ($Q3$) and Interquartile Range ($IQR = Q3 - Q1$) per tool. Any tool execution taking longer than $Q3 + 1.5 \\times IQR$ is flagged as a severe latency bottleneck.
+        """)
+
+    summary = ml.get_anomaly_summary(con)
+    kpi_col1, kpi_col2, kpi_col3, kpi_col4 = st.columns(4)
+    with kpi_col1:
+        st.metric("🚨 Cost Anomalies", format_number(summary["cost_anomaly_count"]))
+    with kpi_col2:
+        st.metric("💸 Impacted Cost", format_usd(summary["total_anomalous_cost_usd"]))
+    with kpi_col3:
+        st.metric("⏱️ Tool Latency Outliers", format_number(summary["latency_anomaly_count"]))
+    with kpi_col4:
+        st.metric("⏳ Max Latency Spike", f"{summary['max_latency_sec']:,}s")
+
+    st.markdown("### Detailed Outlier Inspection")
     col_anom1, col_anom2 = st.columns(2)
+
     with col_anom1:
-        st.markdown("##### High Cost Outliers (Z-Score > 3.0)")
+        st.markdown("##### 1. High Cost Outliers (Z-Score > 3.0)")
         df_cost_anom = ml.detect_cost_anomalies(con, z_threshold=3.0)
         if not df_cost_anom.empty:
-            st.warning(f"Detected {len(df_cost_anom)} cost anomalies.")
-            st.dataframe(df_cost_anom, use_container_width=True, hide_index=True)
+            fig_anom_cost = px.scatter(
+                df_cost_anom.head(50),
+                x="z_score",
+                y="cost_usd",
+                color="model",
+                hover_data=["user_email", "timestamp"],
+                title="Cost ($) vs Z-Score Severity",
+                labels={"z_score": "Z-Score (Std Devs)", "cost_usd": "Cost ($USD)"},
+                color_discrete_map=MODEL_COLORS,
+            )
+            fig_anom_cost.update_layout(height=350)
+            st.plotly_chart(fig_anom_cost, use_container_width=True)
+
+            st.dataframe(
+                df_cost_anom[["timestamp", "user_email", "model", "cost_usd", "duration_sec", "z_score"]],
+                use_container_width=True,
+                hide_index=True,
+            )
         else:
             st.success("No extreme cost anomalies detected.")
 
     with col_anom2:
-        st.markdown("##### Latency Outliers (IQR Method)")
+        st.markdown("##### 2. Severe Tool Latency Outliers (IQR)")
         df_lat_anom = ml.detect_latency_anomalies(con, iqr_multiplier=1.5)
         if not df_lat_anom.empty:
-            st.warning(f"Detected {len(df_lat_anom)} tool latency outliers.")
-            st.dataframe(df_lat_anom, use_container_width=True, hide_index=True)
+            fig_anom_lat = px.bar(
+                df_lat_anom.head(15),
+                x="tool_name",
+                y="duration_sec",
+                color="tool_name",
+                hover_data=["user_email", "timestamp"],
+                title="Top Tool Latency Spikes (Seconds)",
+                labels={"duration_sec": "Duration (Seconds)", "tool_name": "Tool"},
+            )
+            fig_anom_lat.update_layout(showlegend=False, height=350)
+            st.plotly_chart(fig_anom_lat, use_container_width=True)
+
+            st.dataframe(
+                df_lat_anom[["timestamp", "user_email", "tool_name", "duration_sec", "threshold_sec"]],
+                use_container_width=True,
+                hide_index=True,
+            )
         else:
             st.success("No latency outliers detected.")
+
 
