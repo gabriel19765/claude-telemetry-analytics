@@ -1,0 +1,14 @@
+services:
+  telemetry-dashboard:
+    build: .
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./output:/app/output:ro
+      - telemetry-data:/app/data
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+
+volumes:
+  telemetry-data:
