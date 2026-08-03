@@ -1,6 +1,6 @@
 # Claude Code Telemetry Analytics Platform
 
-A production-grade, containerized analytics platform that ingests Claude Code telemetry logs (CloudWatch/OTel format), transforms them into a DuckDB OLAP Star Schema, and serves multi-persona dashboards (Streamlit), programmatic endpoints (FastAPI), and ML anomaly detection.
+A production-grade, containerized analytics platform developed for the **Provectus AI Engineering Technical Task**. It ingests Claude Code telemetry logs (CloudWatch/OTel format), transforms them into a DuckDB OLAP Star Schema, and serves multi-persona dashboards (Streamlit), programmatic endpoints (FastAPI), and ML anomaly detection.
 
 ![Docker Image Size](https://img.shields.io/badge/Docker--Image--Size-~350MB-brightgreen?style=flat-square&logo=docker)
 ![Ingestion Speed](https://img.shields.io/badge/ETL--Ingestion-~450K_events_in_~8s-blue?style=flat-square)
@@ -291,5 +291,12 @@ To scale this analytics platform to enterprise production volume (>10M events/da
   - Implement timestamp-based watermarking and CDC (Change Data Capture) using `MERGE / UPSERT` SQL primitives to process delta updates without full table rebuilds.
 - [ ] **Feat: Enterprise SSO & Multi-Tenant Role-Based Access Control (RBAC)**
   - Integrate OAuth2 / Okta authentication to restrict data visibility so Practice Leads view practice-specific metrics while CTOs maintain full organization access.
+
+---
+
+## License
+
+This project is licensed under the [MIT License](file:///media/gabi/New%20Volume/proyectos/GenAI%20Engineering%20Internship%20Application%20Update%20-%20Provectus/LICENSE).
+
 
 
